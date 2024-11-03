@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'resources.dart';
+import 'community.dart';
+import 'roadmap.dart';
+import 'settings.dart';
+// url-launcher package needed to make URL launching work on resources page, but requires additional config on ARM
 // import 'package:url_launcher/url_launcher.dart';
 
 void main() {
@@ -109,23 +113,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
-class RoadmapScreen extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Center(child: Text('My Roadmap Screen'));
-  }
-}
 
-class CommunityScreen extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Center(child: Text('Community Screen'));
-  }
-}
 
-class SettingsScreen extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Center(child: Text('Settings Screen'));
-  }
-}
+
+

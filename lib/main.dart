@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:url_launcher/url_launcher.dart';
+// import 'package:url_launcher/url_launcher.dart';
 
 void main() {
   runApp(MyApp());
@@ -269,7 +269,7 @@ class ResourceDetailScreen extends StatelessWidget {
             title: Text(webResources[index]),
             onTap: () {
               // Open the web resource in a browser
-              launchURL(Uri.parse(webResources[index]));
+              // launchURL(Uri.parse(webResources[index]));
             },
           );
         },
@@ -277,14 +277,14 @@ class ResourceDetailScreen extends StatelessWidget {
     );
   }
 
-  void launchURL(Uri url) async {
-    // Launch the URL in the default browser
-    if (await canLaunchUrl(url)) {
-      await launchUrl(url);
-    } else {
-      throw 'Could not launch $url';
-    }
-  }
+  // void launchURL(Uri url) async {
+  //   // Launch the URL in the default browser
+  //   if (await canLaunchUrl(url)) {
+  //     await launchUrl(url);
+  //   } else {
+  //     throw 'Could not launch $url';
+  //   }
+  // }
 }
 
 

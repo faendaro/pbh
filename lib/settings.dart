@@ -88,112 +88,112 @@ class _SettingsScreenState extends State<SettingsScreen> {
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
-          key: _formKey,
-          child: ListView(
-            children: [
-              // Name Field
-              TextFormField(
-                controller: _nameController,
-                decoration: InputDecoration(labelText: 'Full Name'),
-                validator: (value) {
-                  if (value?.isEmpty ?? true) {
-                    return 'Please enter your name';
-                  }
-                  return null;
-                },
-              ),
-              
-              // Email Field
-              TextFormField(
-                controller: _emailController,
-                decoration: InputDecoration(labelText: 'Email Address'),
-                keyboardType: TextInputType.emailAddress,
-                validator: (value) {
-                  if (value?.isEmpty ?? true) {
-                    return 'Please enter your email';
-                  }
-                  if (!RegExp(r'\S+@\S+\.\S+').hasMatch(value ?? '')) {
-                    return 'Please enter a valid email address';
-                  }
-                  return null;
-                },
-              ),
-              
-              // Phone Field
-              TextFormField(
-                controller: _phoneController,
-                decoration: InputDecoration(labelText: 'Phone Number'),
-                keyboardType: TextInputType.phone,
-                validator: (value) {
-                  if (value?.isEmpty ?? true) {
-                    return 'Please enter your phone number';
-                  }
-                  return null;
-                },
-              ),
-              
-              // Address Field
-              TextFormField(
-                controller: _addressController,
-                decoration: InputDecoration(labelText: 'Home Address'),
-                validator: (value) {
-                  if (value?.isEmpty ?? true) {
-                    return 'Please enter your address';
-                  }
-                  return null;
-                },
-              ),
-
-              // Dark Mode Switch
-              SwitchListTile(
-                title: Text('Dark Mode'),
-                value: _isDarkMode,
-                onChanged: _toggleDarkMode,
-              ),
-              
-              // Notifications Switch
-              SwitchListTile(
-                title: Text('Enable Notifications'),
-                value: _isNotificationsEnabled,
-                onChanged: _toggleNotifications,
-              ),
-              
-              // Privacy Settings Switch
-              SwitchListTile(
-                title: Text('Make Profile Public'),
-                value: _isPrivacyPublic,
-                onChanged: _togglePrivacy,
-              ),
-
-              // Bike Usage Slider
-              ListTile(
-                title: Text('How do you primarily use your bike?'),
-                subtitle: Text(_bikeUsageValue <= 0.5 ? 'Commuting' : 'Recreation'),
-              ),
-              Slider(
-                value: _bikeUsageValue,
-                min: 0.0,
-                max: 1.0,
-                divisions: 10,
-                label: _bikeUsageValue <= 0.5 ? 'Commuting' : 'Recreation',
-                onChanged: (value) {
-                  setState(() {
-                    _bikeUsageValue = value;
-                  });
-                },
-                thumbColor: Colors.blue,
-                activeColor: Colors.blue,
-              ),
-
-              // Submit Button
-              SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: _submitForm,
-                child: Text('Save Settings'),
-              ),
-            ],
+            key: _formKey,
+            child: ListView(
+              children: [
+                // Name Field
+                TextFormField(
+                  controller: _nameController,
+                  decoration: InputDecoration(labelText: 'Full Name'),
+                  validator: (value) {
+                    if (value?.isEmpty ?? true) {
+                      return 'Please enter your name';
+                    }
+                    return null;
+                  },
+                ),
+                
+                // Email Field
+                TextFormField(
+                  controller: _emailController,
+                  decoration: InputDecoration(labelText: 'Email Address'),
+                  keyboardType: TextInputType.emailAddress,
+                  validator: (value) {
+                    if (value?.isEmpty ?? true) {
+                      return 'Please enter your email';
+                    }
+                    if (!RegExp(r'\S+@\S+\.\S+').hasMatch(value ?? '')) {
+                      return 'Please enter a valid email address';
+                    }
+                    return null;
+                  },
+                ),
+                
+                // Phone Field
+                TextFormField(
+                  controller: _phoneController,
+                  decoration: InputDecoration(labelText: 'Phone Number'),
+                  keyboardType: TextInputType.phone,
+                  validator: (value) {
+                    if (value?.isEmpty ?? true) {
+                      return 'Please enter your phone number';
+                    }
+                    return null;
+                  },
+                ),
+                
+                // Address Field
+                TextFormField(
+                  controller: _addressController,
+                  decoration: InputDecoration(labelText: 'Home Address'),
+                  validator: (value) {
+                    if (value?.isEmpty ?? true) {
+                      return 'Please enter your address';
+                    }
+                    return null;
+                  },
+                ),
+          
+                // Dark Mode Switch
+                SwitchListTile(
+                  title: Text('Dark Mode'),
+                  value: _isDarkMode,
+                  onChanged: _toggleDarkMode,
+                ),
+                
+                // Notifications Switch
+                SwitchListTile(
+                  title: Text('Enable Notifications'),
+                  value: _isNotificationsEnabled,
+                  onChanged: _toggleNotifications,
+                ),
+                
+                // Privacy Settings Switch
+                SwitchListTile(
+                  title: Text('Make Profile Public'),
+                  value: _isPrivacyPublic,
+                  onChanged: _togglePrivacy,
+                ),
+          
+                // Bike Usage Slider
+                ListTile(
+                  title: Text('How do you primarily use your bike?'),
+                  subtitle: Text(_bikeUsageValue <= 0.5 ? 'Commuting' : 'Recreation'),
+                ),
+                Slider(
+                  value: _bikeUsageValue,
+                  min: 0.0,
+                  max: 1.0,
+                  divisions: 10,
+                  label: _bikeUsageValue <= 0.5 ? 'Commuting' : 'Recreation',
+                  onChanged: (value) {
+                    setState(() {
+                      _bikeUsageValue = value;
+                    });
+                  },
+                  thumbColor: Colors.blue,
+                  activeColor: Colors.blue,
+                ),
+          
+                // Submit Button
+                SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: _submitForm,
+                  child: Text('Save Settings'),
+                ),
+              ],
+            ),
           ),
-        ),
       ),
     );
   }

@@ -53,6 +53,14 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Portland Bike Hub',
       theme: ThemeData(
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            foregroundColor: Colors.white,
+            backgroundColor: Colors.deepPurple,
+            disabledBackgroundColor: Colors.grey,
+            disabledForegroundColor: Colors.black,
+          ),
+        ),
         useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
@@ -86,6 +94,11 @@ class OnboardingScreen extends StatefulWidget {
 class _OnboardingScreenState extends State<OnboardingScreen> {
   final PageController _pageController = PageController();
   String userName = "";
+  int bikingExperience = 0; // Tracks if the user is new to biking
+  String bikingPurpose = ""; // Tracks the user's biking purpose: "Recreation", "Commuting", or "Both"
+  bool groupInterest = false; // Tracks if the user wants to join a group (Yes/No)
+
+  int currentPageIndex = 0;
 
   void _goToNextPage() {
     if (_pageController.hasClients) {
@@ -93,120 +106,321 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     }
   }
 
+  void _goToPreviousPage() {
+    if (_pageController.hasClients) {
+      _pageController.previousPage(duration: Duration(milliseconds: 300), curve: Curves.ease);
+    }
+  }
+
+  void _updatePageIndex(int index) {
+    setState(() {
+      currentPageIndex = index;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: PageView(
-        controller: _pageController,
-        children: [
-          OnboardingPage(
-            title: "Are you new to biking?",
-            description: "No worries, we've got you covered.",
-            // imagePath: "assets/onboarding1.png",
-            onNext: _goToNextPage,
-          ),
-          OnboardingPage(
-            title: "Are you biking alone or in a group?",
-            description: "Tell us more to personalize your experience.",
-            // imagePath: "assets/onboarding2.png",
-            onNext: _goToNextPage,
-          ),
-          OnboardingPage(
-            title: "Would you like to join a group?",
-            description: "Find and join a biking community near you.",
-            // imagePath: "assets/onboarding3.png",
-            onNext: _goToNextPage,
-          ),
-          OnboardingPage(
-            title: "What's your name?",
-            description: "Please enter your name to get started.",
-            // imagePath: "assets/onboarding4.png",
-            isInputPage: true,
-            onInputSubmitted: (input) {
-              setState(() {
-                userName = input;
-              });
-              _goToNextPage();
-            },
-          ),
-          OnboardingPage(
-            title: "How can we help you today?",
-            description: "Find routes, plan rides, or explore community resources.",
-            // imagePath: "assets/onboarding5.png",
-            onNext: _goToNextPage,
-          ),
-          OnboardingPage(
-            title: "We're all set! Let's get started on your biking journey, $userName!",
-            description: "",
-            // imagePath: "assets/onboarding6.png",
-            onNext: () {
-              widget.onboardingComplete();
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (context) => HomeScreen()),
-              );
-            },
-          ),
-        ],
+      body: SafeArea(
+        child: Column(
+          children: [
+            // Progress bar at the top
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: LinearProgressIndicator(
+                value: ((currentPageIndex + ((-0.1 * currentPageIndex) + 0.5)) / 5.0), // There are 6 screens, so max index is 5
+                minHeight: 8,
+                backgroundColor: Colors.grey[300],
+                valueColor: AlwaysStoppedAnimation<Color>(Colors.deepPurple),
+              ),
+            ),
+            
+            // Bicycle icons for the progress bar
+            Padding(
+              padding: const EdgeInsets.only(bottom: 10.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: List.generate(6, (index) {
+                  return Icon(
+                    Icons.directions_bike,
+                    color: index == currentPageIndex ? Colors.deepPurple : const Color.fromARGB(0, 255, 255, 255),
+                    size: 30,
+                  );
+                }),
+              ),
+            ),
+            Expanded(
+              child: PageView(
+                controller: _pageController,
+                onPageChanged: _updatePageIndex,
+                children: [
+                  // First screen: Are you new to biking?
+                  OnboardingPage(
+                    title: "What best describes your experience with biking?",
+                    description: "No matter your experience, we've got you covered.",
+                    onBackPressed: null,
+                    onNext: null, // Disable the "Next" button for this screen
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        ElevatedButton(
+                          onPressed: () {
+                            setState(() {
+                              bikingExperience = 0;
+                            });
+                            _goToNextPage();
+                          },
+                          child: Text('I\'m brand new!'),
+                        ),
+                        SizedBox(height: 10),
+                        ElevatedButton(
+                          onPressed: () {
+                            setState(() {
+                              bikingExperience = 1;
+                            });
+                            _goToNextPage();
+                          },
+                          child: Text('I have some experience'),
+                        ),
+                        SizedBox(height: 10),
+                        ElevatedButton(
+                          onPressed: () {
+                            setState(() {
+                              bikingExperience = 2;
+                            });
+                            _goToNextPage();
+                          },
+                          child: Text('I already bike a lot'),
+                        ),
+                      ],
+                    ),
+                  ),
+              
+                  // Second screen: Biking Purpose (Recreation, Commuting, or Both)
+                  OnboardingPage(
+                    title: bikingExperience == 0
+                        ? "Are you interested in biking recreationally, for commuting, or both?"
+                        : "Do you bike recreationally, for commuting, or both?",
+                    description: "Please choose one of the options below:",
+                    onBackPressed: _goToPreviousPage,
+                    onNext: null, // Disable the "Next" button for this screen
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        ElevatedButton(
+                          onPressed: () {
+                            setState(() {
+                              bikingPurpose = "recreation"; // User selected "Recreation"
+                            });
+                            _goToNextPage();
+                          },
+                          child: Text('Mostly recreationally'),
+                        ),
+                        SizedBox(height: 10),
+                        ElevatedButton(
+                          onPressed: () {
+                            setState(() {
+                              bikingPurpose = "commute"; // User selected "Commuting"
+                            });
+                            _goToNextPage();
+                          },
+                          child: Text('Mostly commuting'),
+                        ),
+                        SizedBox(height: 10),
+                        ElevatedButton(
+                          onPressed: () {
+                            setState(() {
+                              bikingPurpose = "both"; // User selected "Both"
+                            });
+                            _goToNextPage();
+                          },
+                          child: Text('Both!'),
+                        ),
+                      ],
+                    ),
+                  ),
+              
+                  // Third screen: Would you like to join a group? (Yes/No)
+                  OnboardingPage(
+                    title: "Are you interested in connecting with other bikers?",
+                    description: "The Portland Bike Hub offers ways to meet other bikers with similar interests and levels of experience.",
+                    onBackPressed: _goToPreviousPage,
+                    onNext: null, // Disable the "Next" button for this screen
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        ElevatedButton(
+                          onPressed: () {
+                            setState(() {
+                              groupInterest = true; // User selected "Yes"
+                            });
+                            _goToNextPage();
+                          },
+                          child: Text('I\'d love to!'),
+                        ),
+                        SizedBox(height: 10),
+                        ElevatedButton(
+                          onPressed: () {
+                            setState(() {
+                              groupInterest = false; // User selected "No"
+                            });
+                            _goToNextPage();
+                          },
+                          child: Text('Not right now'),
+                        ),
+                      ],
+                    ),
+                  ),
+              
+                  // Fourth screen: What's your name?
+                  OnboardingPage(
+                    title: "What's your name?",
+                    description: "Please enter your name to get started.",
+                    onBackPressed: _goToPreviousPage,
+                    onNext: null,
+                    isInputPage: true,
+                    onInputSubmitted: (input) {
+                      setState(() {
+                        userName = input;
+                      });
+                      _goToNextPage();
+                    },
+                  ),
+              
+                  // Fifth screen: How can we help you today?
+                  OnboardingPage(
+                    title: "How can we help you today?",
+                    description: "Find routes, plan rides, or explore community resources.",
+                    onBackPressed: _goToPreviousPage,
+                    onNext: _goToNextPage,
+                  ),
+              
+                  // Sixth screen: We're all set! Let's get started
+                  OnboardingPage(
+                    title: "We're all set! Let's get started on your biking journey, $userName!",
+                    description: "",
+                    onBackPressed: _goToPreviousPage,
+                    onNext: () {
+                      widget.onboardingComplete();
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (context) => HomeScreen()),
+                      );
+                    },
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 }
 
-class OnboardingPage extends StatelessWidget {
+class OnboardingPage extends StatefulWidget {
   final String title;
   final String description;
-  // final String imagePath;
   final bool isInputPage;
-  final VoidCallback? onNext;
-  final ValueChanged<String>? onInputSubmitted;
+  final VoidCallback? onNext; // onNext is for the "Next" button (for other pages)
+  final ValueChanged<String>? onInputSubmitted; // For submitting text input
+  final Widget? child; // This is for custom widgets (e.g., the Yes/No buttons or multiple options)
+  final VoidCallback? onBackPressed; // Callback for back button press
 
   const OnboardingPage({
     required this.title,
     required this.description,
-    // required this.imagePath,
     this.isInputPage = false,
     this.onNext,
     this.onInputSubmitted,
+    this.child, // Custom content like buttons
+    this.onBackPressed, // Callback for back button
   });
 
   @override
+  State<OnboardingPage> createState() => _OnboardingPageState();
+}
+
+class _OnboardingPageState extends State<OnboardingPage> {
+  final TextEditingController _controller = TextEditingController();
+  bool _isTextFieldEmpty = true; // Track if the TextField is empty
+
+  // Function to handle the change in TextField and enable/disable the Next button
+  void _onTextChanged(String text) {
+    setState(() {
+      _isTextFieldEmpty = text.isEmpty;
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          // Image.asset(imagePath),
-          SizedBox(height: 20),
-          Text(
-            title,
-            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-          ),
-          SizedBox(height: 10),
-          if (description.isNotEmpty)
+    return Scaffold(
+      appBar: AppBar(
+        leading: widget.onBackPressed != null
+          ? IconButton(
+              icon: Icon(Icons.arrow_back), // Back arrow icon
+              onPressed: widget.onBackPressed, // Call the onBackPressed callback when back is pressed
+            )
+          : null,
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            // Title
             Text(
-              description,
+              widget.title,
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 16),
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
-          if (isInputPage) ...[
-            SizedBox(height: 20),
-            TextField(
-              decoration: InputDecoration(
-                border: OutlineInputBorder(),
-                labelText: 'Your Name',
+            SizedBox(height: 10),
+      
+            // Description Text
+            if (widget.description.isNotEmpty)
+              Text(
+                widget.description,
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 16),
               ),
-              onSubmitted: onInputSubmitted,
-            ),
-          ] else ...[
-            SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: onNext,
-              child: Text('Next'),
-            ),
-          ]
-        ],
+      
+            // Custom content (like buttons) passed through the `child` property
+            if (widget.child != null) ...[
+              SizedBox(height: 20),
+              widget.child!, // Render custom child widget here (e.g., Yes/No buttons)
+            ]
+      
+            // Input page with TextField and Next button
+            else if (widget.isInputPage) ...[
+              SizedBox(height: 20),
+              TextField(
+                controller: _controller,
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(),
+                  labelText: 'Your Name',
+                ),
+                onChanged: _onTextChanged, // Listen for text changes
+                onSubmitted: widget.onInputSubmitted, // When the user presses "Enter" on the keyboard
+              ),
+              SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: _isTextFieldEmpty ? null : () { // Disable button if the TextField is empty
+                  widget.onInputSubmitted?.call(_controller.text); // Call the onInputSubmitted with the input text
+                },
+                child: Text('Next'),
+              ),
+            ] 
+            
+            // Default button for "Next" action on other pages
+            else if (widget.onNext != null) ...[
+              SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: widget.onNext,
+                child: Text('Next'),
+              ),
+            ],
+          ],
+        ),
       ),
     );
   }

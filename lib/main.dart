@@ -97,6 +97,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   int bikingExperience = 0; // Tracks if the user is new to biking
   String bikingPurpose = ""; // Tracks the user's biking purpose: "Recreation", "Commuting", or "Both"
   bool groupInterest = false; // Tracks if the user wants to join a group (Yes/No)
+  List<String> selectedPriorities = []; // List to store selected priorities
 
   int currentPageIndex = 0;
 
@@ -116,6 +117,22 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     setState(() {
       currentPageIndex = index;
     });
+  }
+
+  Future<void> _finishOnboarding() async {
+    widget.onboardingComplete();
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    await prefs.setString('userName', userName);
+    await prefs.setString('bikingPurpose', bikingPurpose);
+    await prefs.setInt('bikingExperience', bikingExperience);
+    // Reset onboarding state (for testing purposes or resetting the app)
+    if (mounted) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => HomeScreen()),
+      );
+    }
   }
 
   @override
@@ -287,12 +304,95 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     },
                   ),
               
-                  // Fifth screen: How can we help you today?
+                  // Fifth screen: interests
                   OnboardingPage(
-                    title: "How can we help you today?",
-                    description: "Find routes, plan rides, or explore community resources.",
+                    title: "What are your priorities?",
+                    description: "Select the options that best describe your biking interests:",
                     onBackPressed: _goToPreviousPage,
                     onNext: _goToNextPage,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        CheckboxListTile(
+                          title: Text("Find a bike and/or gear"),
+                          value: selectedPriorities.contains("Find a bike and/or gear"),
+                          onChanged: (bool? value) {
+                            setState(() {
+                              if (value == true) {
+                                selectedPriorities.add("Find a bike and/or gear");
+                              } else {
+                                selectedPriorities.remove("Find a bike and/or gear");
+                              }
+                            });
+                          },
+                        ),
+                        CheckboxListTile(
+                          title: Text("Find friends to bike with"),
+                          value: selectedPriorities.contains("Find friends to bike with"),
+                          onChanged: (bool? value) {
+                            setState(() {
+                              if (value == true) {
+                                selectedPriorities.add("Find friends to bike with");
+                              } else {
+                                selectedPriorities.remove("Find friends to bike with");
+                              }
+                            });
+                          },
+                        ),
+                        CheckboxListTile(
+                          title: Text("Find routes to work"),
+                          value: selectedPriorities.contains("Find routes to work"),
+                          onChanged: (bool? value) {
+                            setState(() {
+                              if (value == true) {
+                                selectedPriorities.add("Find routes to work");
+                              } else {
+                                selectedPriorities.remove("Find routes to work");
+                              }
+                            });
+                          },
+                        ),
+                        CheckboxListTile(
+                          title: Text("Use biking to explore Portland"),
+                          value: selectedPriorities.contains("Use biking to explore Portland"),
+                          onChanged: (bool? value) {
+                            setState(() {
+                              if (value == true) {
+                                selectedPriorities.add("Use biking to explore Portland");
+                              } else {
+                                selectedPriorities.remove("Use biking to explore Portland");
+                              }
+                            });
+                          },
+                        ),
+                        CheckboxListTile(
+                          title: Text("Get some exercise"),
+                          value: selectedPriorities.contains("Get some exercise"),
+                          onChanged: (bool? value) {
+                            setState(() {
+                              if (value == true) {
+                                selectedPriorities.add("Get some exercise");
+                              } else {
+                                selectedPriorities.remove("Get some exercise");
+                              }
+                            });
+                          },
+                        ),
+                        SizedBox(height: 20),
+                        ElevatedButton(
+                          onPressed: selectedPriorities.isNotEmpty
+                              ? () {
+                                  // Store selected priorities when moving to next page
+                                  setState(() {
+                                    // Store selected priorities
+                                  });
+                                  _goToNextPage();
+                                }
+                              : null, // Disable "Next" if no options are selected
+                          child: Text('Next'),
+                        ),
+                      ],
+                    ),
                   ),
               
                   // Sixth screen: We're all set! Let's get started
@@ -300,13 +400,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     title: "We're all set! Let's get started on your biking journey, $userName!",
                     description: "",
                     onBackPressed: _goToPreviousPage,
-                    onNext: () {
-                      widget.onboardingComplete();
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(builder: (context) => HomeScreen()),
-                      );
-                    },
+                    onNext: _finishOnboarding,
                   ),
                 ],
               ),

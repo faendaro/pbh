@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SettingsScreen extends StatefulWidget {
   @override
@@ -17,11 +18,26 @@ class _SettingsScreenState extends State<SettingsScreen> {
   bool _isNotificationsEnabled = true;
   bool _isPrivacyPublic = false;
 
-  // Slider value for bike usage
-  double _bikeUsageValue = 0.5; // 0.0 for "Commuting" and 1.0 for "Recreation"
+  // For radio buttons to represent biking purpose
+  String _bikingPurpose = 'commuting'; // Default value
+  String _userName = ''; // Default empty value
 
   // Form key for validation
   final _formKey = GlobalKey<FormState>();
+
+  // Function to load the user's data from SharedPreferences
+  Future<void> _loadUserData() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    
+    // Load saved values from SharedPreferences
+    String userName = prefs.getString('userName') ?? ''; // Default to empty string if not found
+    String bikingPurpose = prefs.getString('bikingPurpose') ?? 'commuting'; // Default value
+    
+    setState(() {
+      _userName = userName;
+      _bikingPurpose = bikingPurpose;
+    });
+  }
 
   // Function to toggle between light and dark mode
   void _toggleDarkMode(bool value) {
@@ -52,7 +68,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
       final email = _emailController.text;
       final phone = _phoneController.text;
       final address = _addressController.text;
-      final bikeUsage = _bikeUsageValue <= 0.5 ? 'Commuting' : 'Recreation';
 
       // For now, just show a dialog with the updated info
       showDialog(
@@ -64,7 +79,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             'Dark Mode: ${_isDarkMode ? "Enabled" : "Disabled"}\n'
             'Notifications: ${_isNotificationsEnabled ? "Enabled" : "Disabled"}\n'
             'Privacy: ${_isPrivacyPublic ? "Public" : "Private"}\n'
-            'Bike Usage: $bikeUsage',
+            'Bike Usage: $_bikingPurpose',
           ),
           actions: [
             TextButton(
@@ -80,6 +95,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    _loadUserData(); // Load the user's data from SharedPreferences
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -91,9 +112,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
             key: _formKey,
             child: ListView(
               children: [
-                // Name Field
+                // Name Field - pre-filled with userName from SharedPreferences
                 TextFormField(
-                  controller: _nameController,
+                  controller: _nameController..text = _userName, // Set the controller's text
                   decoration: InputDecoration(labelText: 'Full Name'),
                   validator: (value) {
                     if (value?.isEmpty ?? true) {
@@ -165,24 +186,56 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   onChanged: _togglePrivacy,
                 ),
           
-                // Bike Usage Slider
+                // Bike Usage Radio Buttons
                 ListTile(
                   title: Text('How do you primarily use your bike?'),
-                  subtitle: Text(_bikeUsageValue <= 0.5 ? 'Commuting' : 'Recreation'),
                 ),
-                Slider(
-                  value: _bikeUsageValue,
-                  min: 0.0,
-                  max: 1.0,
-                  divisions: 10,
-                  label: _bikeUsageValue <= 0.5 ? 'Commuting' : 'Recreation',
-                  onChanged: (value) {
-                    setState(() {
-                      _bikeUsageValue = value;
-                    });
-                  },
-                  thumbColor: Colors.blue,
-                  activeColor: Colors.blue,
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    Row(
+                      children: [
+                        Radio<String>(
+                          value: 'commuting',
+                          groupValue: _bikingPurpose,
+                          onChanged: (value) {
+                            setState(() {
+                              _bikingPurpose = value!;
+                            });
+                          },
+                        ),
+                        Text('Commuting'),
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        Radio<String>(
+                          value: 'recreation',
+                          groupValue: _bikingPurpose,
+                          onChanged: (value) {
+                            setState(() {
+                              _bikingPurpose = value!;
+                            });
+                          },
+                        ),
+                        Text('Recreation'),
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        Radio<String>(
+                          value: 'both',
+                          groupValue: _bikingPurpose,
+                          onChanged: (value) {
+                            setState(() {
+                              _bikingPurpose = value!;
+                            });
+                          },
+                        ),
+                        Text('Both'),
+                      ],
+                    ),
+                  ],
                 ),
           
                 // Submit Button

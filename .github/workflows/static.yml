@@ -37,7 +37,7 @@ jobs:
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.7.0'  # You can specify the desired Flutter version here
+          flutter-version: '3.24.0'  # You can specify the desired Flutter version here
       
       # Step 3: Cache Flutter dependencies (optional but recommended)
       - name: Cache Flutter dependencies

@@ -12,31 +12,31 @@ class _CommunityScreenState extends State<CommunityScreen> {
       'name': 'Alice',
       'message': 'Hey, how are you doing today?',
       'time': '2 mins ago',
-      'avatar': 'https://randomuser.me/api/portraits/women/1.jpg',
+      'avatar': './assets/woman1.jpg',
     },
     {
       'name': 'Bob',
       'message': 'I just finished my ride. Great weather today!',
       'time': '5 mins ago',
-      'avatar': 'https://randomuser.me/api/portraits/men/1.jpg',
+      'avatar': './assets/man1.jpg',
     },
     {
       'name': 'Charlie',
       'message': 'Let\'s plan a weekend ride!',
       'time': '10 mins ago',
-      'avatar': 'https://randomuser.me/api/portraits/men/2.jpg',
+      'avatar': './assets/man2.jpg',
     },
     {
       'name': 'Dana',
       'message': 'Can anyone recommend a good route for commuting?',
       'time': '15 mins ago',
-      'avatar': 'https://randomuser.me/api/portraits/women/2.jpg',
+      'avatar': './assets/woman2.jpg',
     },
     {
       'name': 'Eve',
       'message': 'I\'ve been using my bike for recreation mostly. Loving it!',
       'time': '20 mins ago',
-      'avatar': 'https://randomuser.me/api/portraits/women/3.jpg',
+      'avatar': './assets/woman3.jpg',
     },
   ];
 
